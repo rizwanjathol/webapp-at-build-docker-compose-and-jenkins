@@ -1,0 +1,30 @@
+version: '3.3'
+services:
+  web:
+    image: book-app-front
+    depends_on:
+      - api 
+    ports:
+      - "85:80"
+        #networks:
+        # - docker_gwbridge
+  api:
+    image: book-app-backend1
+    depends_on:
+      - db
+    ports:
+      - "3001:3001"
+        # networks:
+        #- docker_gwbridge
+  db:
+    container_name: mysqli
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always  
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: database
+      MYSQL_USER: edureka
+      MYSQL_PASSWORD: admin
+    ports:
+      - "3000:3306"
