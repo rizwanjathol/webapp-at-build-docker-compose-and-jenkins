@@ -1,7 +1,7 @@
 version: '3.3'
 services:
   web:
-    image: book-app-front
+    image: muneebshoukat/book-app-front
     depends_on:
       - api 
     ports:
@@ -9,7 +9,7 @@ services:
         #networks:
         # - docker_gwbridge
   api:
-    image: book-app-backend1
+    image: muneebshoukat/book-app-backend1
     depends_on:
       - db
     ports:
