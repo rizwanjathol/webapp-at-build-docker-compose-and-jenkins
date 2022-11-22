@@ -1,16 +1,59 @@
 pipeline {
     agent any
-    
+    environment {
+		DOCKERHUB_CREDENTIALS=credentials('dockerpass')
+	}
+    tools {
+    	maven 'Maven'
+    }
     stages {
-        stage('Build') {
+       
+        stage('Checkout GIT') {
             steps {
-                sh 'mvn clean install -DskipTests'
+                echo 'Pulliing ...';
+                git branch: 'main', url: 'https://github.com/muneebshoukat111/jenkins.git'
             }
         }
-        stage('Test') {
-            steps {
-                sh 'mvn test'
-            }
+	    stage('compiler') {
+      		steps {
+        		sh 'mvn compile'
+      		}
+	    }
+	    stage('Build') {
+      		steps {
+        		sh 'mvn -B -DskipTests clean package'
+      		}
+	    }
+        stage('Testing maven') {
+		    steps {
+		    sh """mvn -version"""
+		    }
         }
-    }   
+	stage("TEST JUNIT") {
+		steps {
+		 sh 'mvn test -DskipTests'
+		}
+	}
+	 stage('Docker Image Build ') {
+		    steps {
+		      script{
+			    sh 'docker build -t muneebshoukat/book-app-front WebContent/'
+			    sh 'docker build -t muneebshoukat/book-app-backend1 servlets/'
+		      }
+		    }
+	 }
+	 stage('Login') {
+
+			steps {
+				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+			}
+	 }
+	 stage('Push') {
+
+			steps {
+				sh 'docker push muneebshoukat/book-app-front:latest'
+			}
+	 }
+    }
 }
+				
